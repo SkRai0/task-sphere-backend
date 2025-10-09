@@ -1,5 +1,6 @@
 package com.iamskrai.task_sphere.project;
 
+import com.iamskrai.task_sphere.project.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

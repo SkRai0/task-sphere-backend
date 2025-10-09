@@ -1,5 +1,7 @@
-package com.iamskrai.task_sphere.project;
+package com.iamskrai.task_sphere.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.iamskrai.task_sphere.task.entity.Task;
 import com.iamskrai.task_sphere.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,16 +9,17 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.util.UUID;
+import java.util.List;
+
 
 @Data
 @Entity
-@Table(name = "projects")
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
+@Table(name = "projects")
 public class Project {
 
     @Id
@@ -37,4 +40,8 @@ public class Project {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
 }

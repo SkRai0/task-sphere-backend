@@ -3,13 +3,13 @@ package com.iamskrai.task_sphere.user;
 import com.iamskrai.task_sphere.user.dto.UserCreateRequest;
 import com.iamskrai.task_sphere.user.dto.UserResponse;
 import com.iamskrai.task_sphere.user.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -20,10 +20,6 @@ public class UserService {
 
     private User mapToEntity(UserCreateRequest request) {
         return new User(request.getName(), request.getEmail());
-    }
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
     }
 
     //Create a User

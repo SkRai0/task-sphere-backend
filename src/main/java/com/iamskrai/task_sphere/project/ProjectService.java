@@ -3,8 +3,10 @@ package com.iamskrai.task_sphere.project;
 import com.iamskrai.task_sphere.project.dto.ProjectCreateRequest;
 import com.iamskrai.task_sphere.project.dto.ProjectResponse;
 import com.iamskrai.task_sphere.project.dto.ProjectUpdateRequest;
+import com.iamskrai.task_sphere.project.entity.Project;
 import com.iamskrai.task_sphere.user.UserRepository;
 import com.iamskrai.task_sphere.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -12,15 +14,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-    }
 
     public ProjectResponse createProject(ProjectCreateRequest request){
         User owner = userRepository.findById(request.getOwnerId())
