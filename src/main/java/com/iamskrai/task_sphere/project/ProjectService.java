@@ -1,5 +1,7 @@
 package com.iamskrai.task_sphere.project;
 
+import com.iamskrai.task_sphere.exception.BadRequestException;
+import com.iamskrai.task_sphere.exception.ResourceNotFoundException;
 import com.iamskrai.task_sphere.project.dto.ProjectCreateRequest;
 import com.iamskrai.task_sphere.project.dto.ProjectResponse;
 import com.iamskrai.task_sphere.project.dto.ProjectUpdateRequest;
@@ -22,7 +24,7 @@ public class ProjectService {
 
     public ProjectResponse createProject(ProjectCreateRequest request){
         User owner = userRepository.findById(request.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getOwnerId()));
 
         Project project = Project.builder()
                 .name(request.getName())
@@ -42,6 +44,9 @@ public class ProjectService {
     }
 
     public List<ProjectResponse> getProjectsByUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new ResourceNotFoundException("User", "id", userId);
+        }
         return projectRepository.findByOwnerId(userId)
                 .stream()
                 .map(p -> ProjectResponse.builder()
@@ -55,10 +60,24 @@ public class ProjectService {
     }
 
     public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest request){
-        Project project = projectRepository.findById(request.getId()).orElseThrow(() -> new RuntimeException("Project Not Found"));
+        if (!projectId.equals(request.getId())) {
+            throw new BadRequestException("Project ID in path does not match ID in request body");
+        }
+        
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", projectId));
 
-        project.setName(request.getName());
-        project.setDescription(request.getDescription());
+        if (request.getName() != null) {
+            project.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            project.setDescription(request.getDescription());
+        }
+        if (request.getOwnerId() != null) {
+            User owner = userRepository.findById(request.getOwnerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getOwnerId()));
+            project.setOwner(owner);
+        }
         project.setUpdatedAt(Instant.now());
 
         Project updatedProject = projectRepository.save(project);
@@ -76,7 +95,7 @@ public class ProjectService {
 
     public void deleteProject(Long id) {
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Project", "id", id));
         projectRepository.delete(project);
     }
 
